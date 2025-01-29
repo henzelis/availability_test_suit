@@ -19,7 +19,7 @@ st.set_page_config(
 sel_col1, sel_col2 = st.columns(2)
 
 with sel_col1:
-    site_url = st.text_input("Enter Site URL", value="https://www.telesphera.net")
+    site_url = st.text_input("Enter Site URL", value="https://www.google.com")
     parameter_options = st.segmented_control(
         "Graphs", options=["Response time (ms)", "Availability (%)"],
         default=["Response time (ms)", "Availability (%)"],
@@ -38,9 +38,10 @@ with sel_col2:
         db.remove(query_db.site_url == site_url)
 
 site_geo_data = site_avail_engine.get_url_coordinates(site_url)
-m = folium.Map(location=[site_geo_data['latitude'], site_geo_data['longitude']], zoom_start=16)
+tiles_list = ["NASAGIBS.ViirsEarthAtNight2012", "Esri.WorldGrayCanvas"]
+m = folium.Map(tiles=tiles_list[-1], location=[site_geo_data['latitude'], site_geo_data['longitude']], zoom_start=16)
 folium.Marker(location=[site_geo_data['latitude'], site_geo_data['longitude']], popup=site_geo_data['city'],
-              tooltip=site_geo_data['region']).add_to(m)
+              tooltip=site_geo_data['region'], icon=folium.Icon(color="green")).add_to(m)
 
 # call to render Folium map in Streamlit
 # st_data = st_folium(m, width=725)
