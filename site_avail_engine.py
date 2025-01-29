@@ -4,7 +4,9 @@ import requests
 import smtplib
 from email.mime.text import MIMEText
 from datetime import datetime
-from tinydb import TinyDB, Query
+import socket as s
+import requests
+import json
 
 
 websites_to_monitor = [
@@ -37,6 +39,24 @@ def check_website_performance(url):
         # Handle exceptions like connection errors, timeouts, etc.
         print(f"[{datetime.now()}] Error checking {url}: {e}")
         return False, None, current_time
+
+
+def get_url_coordinates(site_url):
+    site_hostname = site_url.split("//")[-1]
+    site_ip = s.gethostbyname(site_hostname)
+    url = f'http://ipinfo.io/{site_ip}/json'
+    response = requests.get(url)
+    data = json.loads(response.text)
+    geo_data = {}
+    geo_data["ip"] = data['ip']
+    geo_data["org"] = data['org']
+    geo_data["city"] = data['city']
+    geo_data["country"] = data['country']
+    geo_data["region"] = data['region']
+    geo_data["latitude"] = data['loc'].split(',')[0]
+    geo_data["longitude"] = data['loc'].split(',')[-1]
+    print(geo_data)
+    return geo_data
 
 
 
