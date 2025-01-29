@@ -15,7 +15,7 @@ st.set_page_config(
     layout="wide",
 )
 
-site_url = st.text_input("Enter Site URL", value="https://www.google.com")
+site_url = st.text_input("Enter Site URL", value="https://www.i.ua")
 # parameter_options = st.multiselect(
 #     "Choose parameters to display:",
 #     options=["Response time (ms)", "Availability (%)"],
@@ -39,17 +39,20 @@ refresh_time = st.selectbox("Choose refresh time (sec):", [10, 15, 30])
 #         st.line_chart(df.set_index("time")["response_time"])
 #     time.sleep(refresh_time)
 
+
 placeholder = st.empty()
 while True:
     with placeholder.container():
         status, response_time, current_time = site_avail_engine.check_website_performance(site_url)
-        st.subheader(f"Site Response Time")
-        current_data = {'availability': status, 'response_time': response_time, 'time': current_time}
+        st.subheader(f"Site {site_url} Response Time")
+        current_data = {'site_url': site_url, 'availability': status, 'response_time': response_time, 'time': current_time}
         db = TinyDB('local_db.json')
         db.insert(current_data)
-        df = pd.DataFrame(db.all())
+        query_db = Query()
+        df = pd.DataFrame(db.search(query_db.site_url == site_url))
         df['time'] = pd.to_datetime(df['time'], format="%m-%d-%Y, %H:%M:%S")
         print(df)
+        # st.snow()
         if "Response time (ms)" in parameter_options:
             st.line_chart(df.set_index("time")["response_time"], x_label='Time', y_label='Response Time')
         if "Availability (%)" in parameter_options:
