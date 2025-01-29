@@ -12,4 +12,4 @@ Install requirements:
 pip install -r requirements.txt
 
 Run Web Site Availablitiy Tester:
-streamlit web_ui.py
+streamlit run web_ui.py
